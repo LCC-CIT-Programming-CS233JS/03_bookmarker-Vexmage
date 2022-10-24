@@ -1,0 +1,32 @@
+{
+  "name": "bookmarker1",
+  "version": "1.0.0",
+  "description": "This is a bookmarker application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "babel src -d dist --presets=@babel/preset-env -ws",
+    "cleanWindows": "if exist dist rmdir /Q /S dist",
+    "cleanMac": "rm -rf dist",
+    "build": "(npm run cleanWindows || npm run cleanMac) && babel src -d dist --presets=@babel/preset-env ",
+    "serve": "http-server",
+    "wServe": "concurrently \"npm run watch\" \"npm run serve\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LCC-CIT-Programming-CS233JS/03_bookmarker-Vexmage.git"
+  },
+  "author": "Joel Southall",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LCC-CIT-Programming-CS233JS/03_bookmarker-Vexmage/issues"
+  },
+  "homepage": "https://github.com/LCC-CIT-Programming-CS233JS/03_bookmarker-Vexmage#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.19.3",
+    "@babel/core": "^7.19.6",
+    "@babel/preset-env": "^7.19.4",
+    "concurrently": "^7.5.0",
+    "http-server": "^14.1.1"
+  }
+}
