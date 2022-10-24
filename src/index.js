@@ -39,40 +39,41 @@ class Bookmarker
             ]
         }
         else {
-            this.bookmarks = JSON.parse(localStorage["BOOKMARKS"]);
-            this.fillBookmarksList();
+            this.bookmarks = JSON.parse(localStorage.getItem('BOOKMARKS'));
+            this.fillBookmarksList(bookmarks);
         }
     }
-    generateBookmarkHtml(bookmark, index) {
+    generateBookmarkHtml(bookmarks, index) {
         return `
         <li class="list-group-item checkbox">
         <div class="row">
-        <div class="col-sm-1 pt-2 checkbox">
-            <label>
-            <input id="toggleTaskStatus" type="checkbox" 
-            value="" class="" ${(task.isComplete)?"checked" : "" }
-            onchange="toDo.toggleTaskStatus(${index})"
-            ></label>
+          <div class="col-sm-1 pt-2 checkbox">
+            <label><input type="checkbox" value="" class="" checked}></label>
+          </div>
+          <div class="col-sm-10 task-text complete">
+            <a>${bookmark.link}</a>
+            <p>${bookmark.description}</p>
+          </div>
+          <div class="col-sm-1 pt-2 delete-icon-area">
+            <a class="" href="/"><i class="bi-trash delete-icon"></i></a>
+          </div>
         </div>
-        <div class="col-sm-10 task-text ${(task.isComplete)?"complete" : "" }">
-            ${task.task}
-        </div>
-        <div class="col-sm-1 pt-2 delete-icon-area">
-            <a class="" href="/" onclick="toDo.deleteTask(event, ${index})">
-                <i id="deleteTask" class="bi-trash delete-icon"></i>
-            </a>
-        </div>
-        </div>
-    </li>
+      </li>
         `;
     
     }
     fillBookmarksList(bookmarks) {
         localStorage["BOOKMARKS"] = JSON.stringify(this.bookmarks);
         let bookmarkHtml = this.bookmarks.reduce(
-            (html, bookmark, index) => html += this.generateBookmarkHtml(bookmark, index), 
+            (html, bookmarks, index) => html += this.generateBookmarkHtml(bookmarks, index), 
             '');
         document.getElementById("bookmarks-list").innerHTML = bookmarkHtml;
+    }
+    deleteBookmark(event, index) {
+        event.preventDefault();
+        this.tasks.splice(index, 1);
+        this.fillBookmarksList();
+
     }
 }
 
