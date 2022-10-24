@@ -40,36 +40,39 @@ class Bookmarker
         }
         else {
             this.bookmarks = JSON.parse(localStorage["BOOKMARKS"]);
-        this.fillBookmarksList();
-        document.getElementById("addButton").onclick = this.addBookmarksClick.bind(this);
+            this.fillBookmarksList();
         }
     }
     generateBookmarkHtml(bookmark, index) {
         return `
         <li class="list-group-item checkbox">
-            <div class="row">
-            <div class="col-sm-1 pt-2 checkbox">
-                <label>
-                <input id="addBookmark" type="checkbox" 
-                value="" class="" ${(bookmark.isComplete)?"checked" : "" }
-                onchange="bookmarker.addBookmark(${index})"
-                ></label>
-            </div>
-            <div class="col-sm-10 task-text ${(bookmark.isComplete)?"complete" : "" }">
-                ${bookmark.bookmark}
-            </div>
-            <div class="col-sm-1 pt-2 delete-icon-area">
-                <a class="" href="/" onclick="bookmarker.deleteBookmark(event, ${index})">
-                    <i id="deleteBookmark" class="bi-trash delete-icon"></i>
-                </a>
-            </div>
-            </div>
-        </li>
+        <div class="row">
+        <div class="col-sm-1 pt-2 checkbox">
+            <label>
+            <input id="toggleTaskStatus" type="checkbox" 
+            value="" class="" ${(task.isComplete)?"checked" : "" }
+            onchange="toDo.toggleTaskStatus(${index})"
+            ></label>
+        </div>
+        <div class="col-sm-10 task-text ${(task.isComplete)?"complete" : "" }">
+            ${task.task}
+        </div>
+        <div class="col-sm-1 pt-2 delete-icon-area">
+            <a class="" href="/" onclick="toDo.deleteTask(event, ${index})">
+                <i id="deleteTask" class="bi-trash delete-icon"></i>
+            </a>
+        </div>
+        </div>
+    </li>
         `;
     
     }
     fillBookmarksList(bookmarks) {
-
+        localStorage["BOOKMARKS"] = JSON.stringify(this.bookmarks);
+        let bookmarkHtml = this.bookmarks.reduce(
+            (html, bookmark, index) => html += this.generateBookmarkHtml(bookmark, index), 
+            '');
+        document.getElementById("bookmarks-list").innerHTML = bookmarkHtml;
     }
 }
 
