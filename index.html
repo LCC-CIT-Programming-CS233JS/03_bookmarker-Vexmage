@@ -9,10 +9,10 @@
     <div class="overlay"></div>
 
     <div class="floater content">
-        <form class="bookmark-form">
+        <form class="bookmark-form" id="bookmarks-form">
             <div class="floater-top">
-                <input id="url" type="text" class="form-control">
-                <input id="description" type="text" class="form-control">
+                <input placeholder="http://..." id="url" type="text" class="form-control">
+                <input placeholder="Name of site..." id="description" type="text" class="form-control">
             </div>
             <div class="floater-bottom">
                 <button type="submit" class="btn btn-primary btn-sm">Add</button>
@@ -24,10 +24,7 @@
         <ul class="list-group" id="bookmarks-list">
             <li class="list-group-item checkbox">
               <div class="row">
-                <div class="col-sm-1 pt-2 checkbox">
-                  <label><input type="checkbox" value="" class="" checked></label>
-                </div>
-                <div class="col-sm-10 task-text complete">
+                <div class="col-sm-10 complete">
                   URL
                 </div>
                 <div class="col-sm-1 pt-2 delete-icon-area">

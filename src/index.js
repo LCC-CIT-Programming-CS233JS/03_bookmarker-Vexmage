@@ -28,34 +28,48 @@ class Bookmarker
                     description: "Really cool site for open source photos", 
                     image: "",
                     link: "https://www.pexels.com/", 
-                    title: "https://www.pexels.com/"
+                    title: "https://www.pexels.com/",
                 },
                 {
                     description: "Stanford Encyclopedia of Philosophy ", 
                     image: "",
                     link: "https://plato.stanford.edu/", 
-                    title: "https://plato.stanford.edu/"
+                    title: "https://plato.stanford.edu/",
                 },
             ]
-        }
-        else {
+        } else {
             this.bookmarks = JSON.parse(localStorage.getItem('BOOKMARKS'));
-            this.fillBookmarksList(bookmarks);
+        }
+        this.fillBookmarksList(this.bookmarks);
+        document.getElementById("bookmarks-form").onsubmit = this.addBookmark.bind(this);
+
+        let overlay = document.getElementsByClassName("overlay")[0];
+        let url = document.getElementById("url");
+        let description = document.getElementById("description");
+
+        url.onfocus = () => {
+            overlay.style.opacity = 1;
+        }
+        url.onblur = () => {
+            overlay.style.opacity = 0;
+        }
+        description.onfocus = () => {
+            overlay.style.opacity = 1;
+        }
+        description.onblur = () => {
+            overlay.style.opacity = 0;
         }
     }
-    generateBookmarkHtml(bookmarks, index) {
+    generateBookmarkHtml(bookmark, index) {
         return `
         <li class="list-group-item checkbox">
         <div class="row">
-          <div class="col-sm-1 pt-2 checkbox">
-            <label><input type="checkbox" value="" class="" checked}></label>
-          </div>
-          <div class="col-sm-10 task-text complete">
-            <a>${bookmark.link}</a>
+          <div class="col-sm-10 complete">
+            <a href="${bookmark.link}">${bookmark.title}</a>
             <p>${bookmark.description}</p>
           </div>
           <div class="col-sm-1 pt-2 delete-icon-area">
-            <a class="" href="/"><i class="bi-trash delete-icon"></i></a>
+            <a class="delete-bookmark" href="/" onclick="bookmarker.deleteBookmark(event, ${index})"><i class="bi-trash delete-icon"></i></a>
           </div>
         </div>
       </li>
@@ -63,83 +77,38 @@ class Bookmarker
     
     }
     fillBookmarksList(bookmarks) {
-        localStorage["BOOKMARKS"] = JSON.stringify(this.bookmarks);
-        let bookmarkHtml = this.bookmarks.reduce(
-            (html, bookmarks, index) => html += this.generateBookmarkHtml(bookmarks, index), 
+        localStorage["BOOKMARKS"] = JSON.stringify(bookmarks);
+        let bookmarkHtml = bookmarks.reduce(
+            (html, bookmark, index) => html += this.generateBookmarkHtml(bookmark, index), 
             '');
         document.getElementById("bookmarks-list").innerHTML = bookmarkHtml;
     }
     deleteBookmark(event, index) {
         event.preventDefault();
-        this.tasks.splice(index, 1);
-        this.fillBookmarksList();
+        this.bookmarks.splice(index, 1);
+        this.fillBookmarksList(this.bookmarks);
 
+    }
+    addBookmark(event) {
+        event.preventDefault();
+        let ourUrl = document.getElementById("url");
+        let ourDescription = document.getElementById("description");
+        let bookmark = {
+            description: ourDescription.value, 
+            image: "",
+            link: ourUrl.value, 
+            title: ourUrl.value,
+        }
+        this.bookmarks.push(bookmark);
+        this.fillBookmarksList(this.bookmarks);
+        ourDescription.value = "";
+        ourUrl.value = "";
     }
 }
 
 /* TESTING THIS
 Create a class called Bookmarker
-    PART 1 - Show the bookmarks
-    -   Add a constructor
-        -   Create an instance variable called bookmarks.
-        -   Try to load the bookmarks from local storage.  If there's nothing in local storage 
-            set it equal to an object literal that contains at least 2 bookmarks
-            [
-                {
-                    description: "Really cool site for open source photos", 
-                    image: "",
-                    link: "https://www.pexels.com/", 
-                    title: "https://www.pexels.com/"
-                },
-            ]
-        -   call the method fillBookmarksList and pass in the bookmarks
-
-    -   Add the generateBookmarkHtml method
-        -   This method returns a template literal containing the html for ONE bookmark in the array.
-            It gets called in fillBookMarksList.  It has 2 parameters a bookmark and an index.
-        -   CUT the html for ONE bookmark from your html page into the body of your method.
-        -   Enclose the html in ``.
-        -   Replace the hardcoded description, image, link and title (of the sample bookmark) 
-            with template strings that use the properties of the bookmark object
-        -   Return the template literal
-
-    -   Add the fillBookmarksList method.  It has bookmarks as its parameter.
-        -   Save the bookmarks to local storage
-        -   Create a variable bookmarkHtml and set it equal to the
-            the return value for each of the individual tasks combined
-            You can do this by calling the reduce method on the array
-            It manipulates each element of an array to produce ONE result.  From the ToDoList:
-                let tasksHtml = this.tasks.reduce(
-                    (html, task, index) => html += this.generateTaskHtml(task, index), 
-                    '');
-        -   Set contents of the bookmarks-list element on the page to the bookmarkHtml variable
-        );
-    END OF PART 1 - TEST AND DEBUG YOUR CODE - YOU SHOULD SEE HARDCODED BOOKMARKS YOUR ON PAGE
-
-    PART 2 - Delete a bookmark
-    -   Add the deleteBookmark method.  It has 2 parameters, event and index
-        -   prevent the default action of the anchor tag using the event parameter
-        -   delete the bookmark from the list based on the index
-        -   call fillBookmarksList
-    -   Add an onclick handler to the delete icon
-        The handler should call the deleteBookmark method with event 
-        and index (template string) as its parameters
-    END OF PART 2 - TEST AND DEBUG YOUR CODE
-
-    PART 3 - Add a bookmark
-    -   Add the function addBookmark.  It has event as its parameter.
-        -   Because the textboxes for entering bookmark info are in a form, you will
-            need to prevent the form from being submitted (which is the default behavior)
-            like you prevented the delete link in ToDoList from going to a new page.  
-        -   get the url and the description from the form and create a bookmark object. 
-            Use the url for both the link and the title.  Leave the image blank.
-        -   add the new bookmark to the list
-        -   call fillBookmarksList
-        -   clear the form on the UI
-    -   Add a onsubmit handler to the form in the constructor.  
-        It should call addBookmark.  You must bind this to the class because this will be the form
-        when the submit handler is called if you don't.
-    END OF PART 3 - TEST AND DEBUG YOUR CODE
+    
 
     EXTRA CREDIT: 
     -   Do something on the page to draw attention to the form when you enter and leave 
