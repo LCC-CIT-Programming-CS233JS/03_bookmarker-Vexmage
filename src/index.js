@@ -47,6 +47,7 @@ class Bookmarker
         let url = document.getElementById("url");
         let description = document.getElementById("description");
 
+        // This stuff is for drawing attention to the form.
         url.onfocus = () => {
             overlay.style.opacity = 1;
         }
@@ -60,6 +61,7 @@ class Bookmarker
             overlay.style.opacity = 0;
         }
     }
+    
     generateBookmarkHtml(bookmark, index) {
         return `
         <li class="list-group-item checkbox">
