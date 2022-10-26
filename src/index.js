@@ -95,11 +95,27 @@ class Bookmarker
         event.preventDefault();
         let ourUrl = document.getElementById("url");
         let ourDescription = document.getElementById("description");
+        let url = ourUrl.value.trim();
+
+        if (url == "" ) {
+            return;
+        }
+
+        if (!url.startsWith("https://") && !url.startsWith("http://")) {
+            url = "http://" + url;
+        }
+
+        try {
+            new URL(url);
+        } catch { 
+            return;
+        }
+
         let bookmark = {
             description: ourDescription.value, 
             image: "",
-            link: ourUrl.value, 
-            title: ourUrl.value,
+            link: url, 
+            title: url,
         }
         this.bookmarks.push(bookmark);
         this.fillBookmarksList(this.bookmarks);
