@@ -1,26 +1,19 @@
-/* 
-Setup your development environment OK I WILL
-    -   clone the repository with the starting files from github
-    -   run npm init from the command line to create your package.json file
-    -   run npm install ... and include the tools that you want to use in your application
-    -   edit the scripts block in package.json to include npm commands you want to use
- 
-Create the look and feel of your page
-    Use html 5 input attributes to make sure that the url and description are provided.
-        The url should be a valid url too.
-    -   At this point the user enters the url and the description.  After we talk about
-        making an ajax call in chapter 3, we'll get the image and the title from an api.
-    Add one or more sample bookmarks to the html page.
-    -   Each bookmark is a link that contains: an image, 
-        and the text that the user sees.  It also has a description and an icon for deleting.
-    -   Don't forget the event handler on the control that deletes the bookmark
-    Style the list of bookmarks and the page as a whole so it is reasonably attractive
-    -   I have provided a screen shot of my page as well as 
-        a screen shot of what my page looks like when I'm adding a new bookmark. */
-
 class Bookmarker
 {
     constructor() {
+
+        this.body           = document.body;       
+        this.overlay        = document.querySelector('.overlay');
+        this.bookmarksList  = document.querySelector('.bookmarks-list');
+        this.bookmarkForm   = document.querySelector('.bookmark-form');
+        this.bookmarkUrl    = this.bookmarkForm.querySelector('#url');
+        this.bookmarkDesc   = this.bookmarkForm.querySelector('#description');
+        this.bookmarks      = JSON.parse(localStorage.getItem('bookmarks'));
+        this.apiUrl         = 'https://opengraph.io/api/1.1/site';
+        this.appId          = 'fbc0d09c-b334-455b-aa86-bcb0a1714968';
+        // 'bca93b02-dc66-4738-8eae-52a57d8d47d0'; //joel's api key from opengraph.io
+        // teacher's api key is 'fbc0d09c-b334-455b-aa86-bcb0a1714968'; but I should use my own
+
         if (!localStorage["BOOKMARKS"]) { 
             this.bookmarks =             
             [
@@ -41,7 +34,7 @@ class Bookmarker
             this.bookmarks = JSON.parse(localStorage.getItem('BOOKMARKS'));
         }
         this.fillBookmarksList(this.bookmarks);
-        document.getElementById("bookmarks-form").onsubmit = this.addBookmark.bind(this);
+        document.getElementById("bookmark-form").onsubmit = this.addBookmark.bind(this);
 
         let overlay = document.getElementsByClassName("overlay")[0];
         let url = document.getElementById("url");
@@ -93,9 +86,30 @@ class Bookmarker
     }
     addBookmark(event) {
         event.preventDefault();
-        let ourUrl = document.getElementById("url");
-        let ourDescription = document.getElementById("description");
-        let url = ourUrl.value.trim();
+        const urlForHref = document.querySelector('#url').value; //new
+        const url = encodeURIComponent(urlForHref); //new
+        //let ourUrl = document.getElementById("url"); //replaced?
+        //let ourDescription = document.getElementById("description");
+        const description = document.querySelector('#description').value; //new
+        fetch('${this.apiUrl}/${url}?app_id=${this.appId}')
+            .then (response => response.json())
+            .then (data => {
+                const bookmark = {
+                    title: data.hybridGraph.title,
+                    image: data.hybridGraph.image,
+                    link: urlForHref,
+                    description: description
+                }; // add the data from the api to our bookmark
+                this.bookmarks.push(bookmark); //add the bookmark to the list
+                this.fillBookmarksList(this.bookmarks);
+                document.querySelector('.bookmark-form').reset();
+            })
+            .catch(error => {
+                console.log('There was a problem getting info!');
+            })
+        ;
+
+        //let url = ourUrl.value.trim(); //replaced by new
 
         if (url == "" ) {
             return;
@@ -111,16 +125,6 @@ class Bookmarker
             return;
         }
 
-        let bookmark = {
-            description: ourDescription.value, 
-            image: "",
-            link: url, 
-            title: url,
-        }
-        this.bookmarks.push(bookmark);
-        this.fillBookmarksList(this.bookmarks);
-        ourDescription.value = "";
-        ourUrl.value = "";
     }
 }
 
