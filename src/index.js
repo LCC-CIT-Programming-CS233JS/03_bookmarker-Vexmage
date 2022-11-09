@@ -10,7 +10,7 @@ class Bookmarker
         this.bookmarkDesc   = this.bookmarkForm.querySelector('#description');
         this.bookmarks      = JSON.parse(localStorage.getItem('bookmarks'));
         this.apiUrl         = 'https://opengraph.io/api/1.1/site';
-        this.appId          = 'fbc0d09c-b334-455b-aa86-bcb0a1714968';
+        this.appId          = '0381968e-c63b-4260-9838-ade2ed25c9d1';
         // 'bca93b02-dc66-4738-8eae-52a57d8d47d0'; //joel's api key from opengraph.io
         // teacher's api key is 'fbc0d09c-b334-455b-aa86-bcb0a1714968'; but I should use my own
 
@@ -60,6 +60,7 @@ class Bookmarker
         <li class="list-group-item checkbox">
         <div class="row">
           <div class="col-sm-10 complete">
+            <img src="${bookmark.image}" class="img-fluid max-width:100%;"></img>
             <a href="${bookmark.link}">${bookmark.title}</a>
             <p>${bookmark.description}</p>
           </div>
@@ -86,28 +87,12 @@ class Bookmarker
     }
     addBookmark(event) {
         event.preventDefault();
-        const urlForHref = document.querySelector('#url').value; //new
-        const url = encodeURIComponent(urlForHref); //new
+        let url = document.querySelector('#url').value; //new
+
         //let ourUrl = document.getElementById("url"); //replaced?
         //let ourDescription = document.getElementById("description");
         const description = document.querySelector('#description').value; //new
-        fetch('${this.apiUrl}/${url}?app_id=${this.appId}')
-            .then (response => response.json())
-            .then (data => {
-                const bookmark = {
-                    title: data.hybridGraph.title,
-                    image: data.hybridGraph.image,
-                    link: urlForHref,
-                    description: description
-                }; // add the data from the api to our bookmark
-                this.bookmarks.push(bookmark); //add the bookmark to the list
-                this.fillBookmarksList(this.bookmarks);
-                document.querySelector('.bookmark-form').reset();
-            })
-            .catch(error => {
-                console.log('There was a problem getting info!');
-            })
-        ;
+
 
         //let url = ourUrl.value.trim(); //replaced by new
 
@@ -125,23 +110,30 @@ class Bookmarker
             return;
         }
 
+        url = encodeURIComponent(url); //new
+
+        fetch(`${this.apiUrl}/${url}?app_id=${this.appId}`)
+            .then (response => response.json())
+            .then (data => {
+                console.log(data);
+                const bookmark = {
+                    title: data.hybridGraph.title,
+                    image: data.hybridGraph.image,
+                    link: url,
+                    description: description
+                }; // add the data from the api to our bookmark
+                this.bookmarks.push(bookmark); //add the bookmark to the list
+                this.fillBookmarksList(this.bookmarks);
+                document.querySelector('.bookmark-form').reset();
+            })
+            .catch(error => {
+                console.log('There was a problem getting info!');
+                console.error(error);
+            })
+        ;
+
     }
 }
 
-/* TESTING THIS
-Create a class called Bookmarker
-    
-
-    EXTRA CREDIT: 
-    -   Do something on the page to draw attention to the form when you enter and leave 
-        the form.  See my screen shot and the styles in the css file to an idea.
-
-*/
-
-/*  THIS IS NECESSARY FOR TESTING ANY OF YOUR CODE
-    declare a variable bookmarker
-    Add a window on load event handler that instantiates a Bookmarker object.  
-    Use and arrow or anonymous function
-*/
 let bookmarker;
 window.onload = () => {bookmarker = new Bookmarker();}
